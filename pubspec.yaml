@@ -3,8 +3,8 @@ description: 'Reliable local reminders for Flutter. Persists what the user meant
 version: 0.1.0
 homepage:
 
-repository: https://github.com/awaisdev5765/prism_alerts
-issue_tracker: https://github.com/awaisdev5765/prism_alerts/issues
+repository: https://github.com/Awaisdev01/prism_alerts
+issue_tracker: https://github.com/Awaisdev01/prism_alerts/issues
 
 environment:
   sdk: ^3.14.0
