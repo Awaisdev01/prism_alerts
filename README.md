@@ -1,24 +1,29 @@
-# prism_alerts
+<h1 align="center">⏰ prism_alerts</h1>
 
-[![pub package](https://img.shields.io/pub/v/prism_alerts.svg)](https://pub.dev/packages/prism_alerts)
+<p align="center">
+  <b>Local reminders that survive timezone changes, DST shifts and reboots.</b><br/>
+  Because the OS only remembers a UTC instant — not what your user <i>meant</i>.
+</p>
 
-**Reliable local reminders for Flutter.** The OS scheduler only remembers a
-UTC instant — so when your user flies to another timezone, when DST shifts,
-or after a reboot, "08:00 every day" silently fires at the wrong time (or
-never). `prism_alerts` remembers what the user *meant* and rebuilds the
-schedule whenever the world moves.
+<p align="center">
+  <a href="https://pub.dev/packages/prism_alerts"><img src="https://img.shields.io/pub/v/prism_alerts.svg?logo=dart&logoColor=white" alt="pub.dev"></a>
+  <a href="https://github.com/Awaisdev01/prism_alerts/actions"><img src="https://img.shields.io/github/actions/workflow/status/Awaisdev01/prism_alerts/ci.yml?branch=main&label=CI" alt="CI"></a>
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT">
+</p>
+
+---
 
 ## The problem
 
-`flutter_local_notifications.zonedSchedule()` converts your `TZDateTime` to
-a UTC moment and hands it to the OS. The OS keeps only that moment. The
-local time you meant is gone:
+`flutter_local_notifications.zonedSchedule()` converts your `TZDateTime` to a UTC moment and hands it to the OS. The OS keeps only that moment. The local time you meant is gone:
 
-- ✈️ User travels: notification fires at the *old* local time
-- 🕐 DST shifts (2×/year in most of Europe and the US): every daily reminder drifts by an hour
-- 🔁 Reboot (Android <12 receiver quirks): scheduled notifications can vanish
+- ✈️ **User travels** — notification fires at the *old* local time
+- 🕐 **DST shifts** (2×/year in most of Europe and the US) — every daily reminder drifts by an hour
+- 🔁 **Reboot** — scheduled notifications can vanish (Android <12 receiver quirks)
 
 ## The fix
+
+`prism_alerts` stores the *intent* (local hour, recurrence rule) and **reconciles** the schedule against reality whenever the world moves:
 
 ```dart
 final alerts = PrismAlerts.instance;
@@ -38,22 +43,32 @@ if (report.timezoneChanged || report.offsetChanged) {
   // All schedules were rebuilt for the new local time.
 }
 if (report.missed > 0) {
-  // Some slots passed while the app was dead — show them in-app.
+  // Surfaces what the user missed while the app was away.
 }
 ```
 
 ## Features
 
-- **Intent persistence** — local wall-clock + recurrence survives restarts
-- **`reconcile()`** — one call on resume detects tz/offset drift, cancels
-  and rebuilds every schedule
-- **Missed-notification report** — surface "you missed X" instead of silence
-- **DST-correct math** — wall-clock stepping (verified against
-  Europe/Berlin spring-forward), not naive 24-hour adds
-- **Recurrences** — once, daily, weekly (weekday set), every-N-days
+- **Intent-based scheduling** — store "08:00 local, daily", not a UTC instant
+- **`reconcile()`** — one call on app resume rebuilds everything that moved
+- **Missed-notification surfacing** — the user's reminder isn't silently lost
+- **Reboot resilient** — re-registers on device restart
+
+## Install
+
+```sh
+dart pub add prism_alerts
+```
 
 ## Part of the Prism ecosystem
 
-`prism_kit` · `prism_glass` (Liquid Glass) · `prism_doctor` (design audit) ·
-`prism_sketch` · `prism_guardrails` · `prism_alerts` (this package) ·
-`urdu_toolkit`
+| Package | Role |
+|---|---|
+| [`prism_kit`](https://github.com/Awaisdev01/prism_kit) | 51-component adaptive UI kit |
+| [`prism_glass`](https://github.com/Awaisdev01/prism_glass) | Apple Liquid Glass for Flutter |
+| [`prism_doctor`](https://github.com/Awaisdev01/prism_doctor) | Design-system auditor |
+| **`prism_alerts`** | **this package** |
+
+## License
+
+MIT
